@@ -1,8 +1,5 @@
-﻿using GorillaScience.Behaviors;
-using GorillaScience.Tools;
-using System;
+﻿using LightsCameraAction.Interactions;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -12,6 +9,7 @@ namespace LightsCameraAction.GUI
     {
         public List<ModeButton> modeButtons;
         public ModeButton cinematicButton;
+
         void Awake()
         {
             modeButtons = new List<ModeButton>();
@@ -37,9 +35,7 @@ namespace LightsCameraAction.GUI
         };
         void Update()
         {
-            Vector2 stickDir;
-            InputTracker.Instance.leftController
-                .TryGetFeatureValue(CommonUsages.primary2DAxis, out stickDir);
+            Vector2 stickDir = GestureTracker.Instance.leftStickAxis.GetValue();
 
             if (stickDir.magnitude < .75f) return;
 

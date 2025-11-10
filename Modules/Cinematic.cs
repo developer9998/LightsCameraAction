@@ -1,10 +1,12 @@
 ﻿using GorillaLocomotion;
-using GorillaScience.Behaviors;
-using GorillaScience.Extensions;
+using LightsCameraAction.Extensions;
+using LightsCameraAction.Interactions;
+using LightsCameraAction.Tools;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Player = GorillaLocomotion.GTPlayer;
 
 namespace LightsCameraAction.Modules
 {
@@ -25,7 +27,7 @@ namespace LightsCameraAction.Modules
                 laptopPrefab.SetActive(false);
                 laptopPrefab.transform.SetParent(Plugin.Instance.transform);
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void OnEnable()
@@ -53,12 +55,12 @@ namespace LightsCameraAction.Modules
                 laptopCamera.transform.SetParent(null);
                 laptopCamera.cullingMask = shoulderCamera.cullingMask;
 
-                laptop.transform.SetParent(Player.Instance.leftControllerTransform, false);
+                laptop.transform.SetParent(Player.Instance.LeftHand.controllerTransform, false);
                 laptop.transform.localPosition = Vector3.right * .05f;
 
                 path.pathFollower = laptopCamera.transform;
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void OnDisable()
@@ -79,7 +81,7 @@ namespace LightsCameraAction.Modules
             }
             catch (Exception e)
             {
-                Plugin.log.Exception(e);
+                Logging.Exception(e);
             }
         }
 
@@ -124,7 +126,7 @@ namespace LightsCameraAction.Modules
             {
                 string name;
                 LaptopButton button;
-                buttons = new Dictionary<string, LaptopButton>();
+                buttons = [];
                 foreach (Transform t in this.transform.Find("Buttons"))
                 {
                     name = t.name.ToLower();
@@ -139,7 +141,7 @@ namespace LightsCameraAction.Modules
                 }
                 speedText.text = $"{path.CycleSpeed()}x";
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void FixedUpdate()
@@ -182,7 +184,7 @@ namespace LightsCameraAction.Modules
                 playBtn.Find("Play Button/Pause Icon")
                     .gameObject.SetActive(path.playing);
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         private void LockUnlock()
@@ -190,7 +192,7 @@ namespace LightsCameraAction.Modules
             this.Locked = !this.Locked;
             path.target = Locked? Player.Instance.headCollider.transform : null;
             Sound.Play();
-            InputTracker.Instance.HapticPulse(false);
+            GestureTracker.Instance.HapticPulse(false);
             UpdateIcons();
         }
 
@@ -198,14 +200,14 @@ namespace LightsCameraAction.Modules
         {
             speedText.text = $"{path.CycleSpeed()}x";
             Sound.Play();
-            InputTracker.Instance.HapticPulse(false);
+            GestureTracker.Instance.HapticPulse(false);
         }
 
         private void Loop()
         {
             Path.loop = !Path.loop;
             Sound.Play();
-            InputTracker.Instance.HapticPulse(false);
+            GestureTracker.Instance.HapticPulse(false);
             UpdateIcons();
         }
 
@@ -217,7 +219,7 @@ namespace LightsCameraAction.Modules
                 path.Resume();
             UpdateIcons();
             Sound.Play();
-            InputTracker.Instance.HapticPulse(false);
+            GestureTracker.Instance.HapticPulse(false);
         }
 
         private void UndoPoint()
@@ -225,7 +227,7 @@ namespace LightsCameraAction.Modules
             if (path.RemoveLastPoint())
             {
                 Sound.Play();
-                InputTracker.Instance.HapticPulse(false);
+                GestureTracker.Instance.HapticPulse(false);
             }
         }
 
@@ -243,12 +245,12 @@ namespace LightsCameraAction.Modules
                 if (path.AddPoint(point))
                 {
                     Sound.Play();
-                    InputTracker.Instance.HapticPulse(false);
+                    GestureTracker.Instance.HapticPulse(false);
                 }
                 else
                     point.gameObject.Obliterate();
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
     }
 
@@ -312,7 +314,7 @@ namespace LightsCameraAction.Modules
                         .GetComponent<LineRenderer>());
                 lineRenderer.enabled = false;
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void Start()
@@ -416,7 +418,7 @@ namespace LightsCameraAction.Modules
 
         public void Pause()
         {
-            Plugin.log.Debug("Pausing");
+            Logging.Debug("Pausing");
             playing = false;
             UpdateLine();
         }
@@ -427,7 +429,7 @@ namespace LightsCameraAction.Modules
             if (reachedEndOfPath)
                 Restart();
             if (container.childCount == 0) return;
-            Plugin.log.Debug("Resuming");
+            Logging.Debug("Resuming");
             startTime = Time.time;
             playing = true;
         }
@@ -443,9 +445,8 @@ namespace LightsCameraAction.Modules
 
         public float CycleSpeed()
         {
-            speed = (speed * 2);
-            if (speed >= 10)
-                speed = 1;
+            speed *= 2;
+            if (speed >= 10) speed = 1;
             return speed;
         }
 

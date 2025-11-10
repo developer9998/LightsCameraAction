@@ -1,10 +1,8 @@
-﻿using GorillaLocomotion;
-using GorillaScience.Extensions;
-using GorillaScience.Tools;
+﻿using LightsCameraAction.Extensions;
+using LightsCameraAction.Tools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using Player = GorillaLocomotion.GTPlayer;
 
 namespace LightsCameraAction.Modules
 {
@@ -24,7 +22,7 @@ namespace LightsCameraAction.Modules
                 tripodPrefab.SetActive(false);
                 tripodPrefab.transform.SetParent(Plugin.Instance.transform);
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void OnEnable()
@@ -44,9 +42,9 @@ namespace LightsCameraAction.Modules
                 previewCamera.fieldOfView = 90;
                 previewCamera.nearClipPlane = shoulderCamera.nearClipPlane;
 
-                tripodTransform.position = Player.Instance.leftControllerTransform.position;
+                tripodTransform.position = Player.Instance.LeftHand.controllerTransform.position;
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void OnDisable()
@@ -71,7 +69,7 @@ namespace LightsCameraAction.Modules
                 tripodTransform.localScale = Vector3.one * Player.Instance.scale;
                 base.LateUpdate();
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         public Tripod Disable()

@@ -1,9 +1,4 @@
-﻿using GorillaScience.Behaviors;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LightsCameraAction
+﻿namespace LightsCameraAction
 {
     public static class Sound
     {

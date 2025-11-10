@@ -1,18 +1,14 @@
-﻿using Cinemachine;
-using GorillaScience.Behaviors;
-using GorillaScience.Extensions;
-using GorillaScience.Tools;
+﻿using Unity.Cinemachine;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using CinemachineThirpy = Cinemachine.Cinemachine3rdPersonFollow;
+using CinemachineThirpy = Unity.Cinemachine.Cinemachine3rdPersonFollow;
+using LightsCameraAction.Tools;
+
 namespace LightsCameraAction.Modules
 {
     public abstract class LCAModule : MonoBehaviour
     {
         public abstract string DisplayName();
-
 
         public static CinemachineThirpy thirpy;
         public static CinemachineBrain brain;
@@ -22,11 +18,12 @@ namespace LightsCameraAction.Modules
         public static Transform baseParent;
         static DebugRay x, y, z;
         static Transform debugVisual;
+
         public static void Baseline()
         {
             try
             {
-                thirpy = FindObjectOfType<CinemachineThirpy>();
+                thirpy = FindFirstObjectByType<CinemachineThirpy>();
                 brain = thirpy.gameObject.GetComponentInParent<CinemachineBrain>();
                 shoulderCamera = thirpy.gameObject.GetComponentInParent<Camera>();
                 baseParent = shoulderCamera.transform.parent;
@@ -44,7 +41,7 @@ namespace LightsCameraAction.Modules
                 //x = new GameObject("LCA DebugRay X").AddComponent<DebugRay>().SetColor(Color.red);
                 //y = new GameObject("LCA DebugRay Y").AddComponent<DebugRay>().SetColor(Color.green);
                 //z = new GameObject("LCA DebugRay Z").AddComponent<DebugRay>().SetColor(Color.blue);
-            } catch (Exception e) { Plugin.log.Exception(e); }
+            } catch (Exception e) { Logging.Exception(e); }
         }
 
         protected virtual void LateUpdate()

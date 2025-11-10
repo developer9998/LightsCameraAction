@@ -1,9 +1,6 @@
-﻿using GorillaLocomotion;
-using GorillaScience.Behaviors;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LightsCameraAction.Tools;
 using UnityEngine;
+using Player = GorillaLocomotion.GTPlayer;
 
 namespace LightsCameraAction
 {
@@ -15,18 +12,19 @@ namespace LightsCameraAction
 
         void Start()
         {
-            Plugin.log.Debug("Start");
+            Logging.Debug("Start");
 
-            Plugin.Instance.inputTracker.leftGrip.OnPressed += LeftTryMoving;
-            Plugin.Instance.inputTracker.leftTrigger.OnPressed += LeftTryRotating;
-            Plugin.Instance.inputTracker.rightGrip.OnPressed += RightTryMoving;
-            Plugin.Instance.inputTracker.rightTrigger.OnPressed += RightTryRotating;
+            Plugin.Instance.gestureTracker.leftGrip.OnPressed += LeftTryMoving;
+            Plugin.Instance.gestureTracker.leftTrigger.OnPressed += LeftTryRotating;
+            Plugin.Instance.gestureTracker.rightGrip.OnPressed += RightTryMoving;
+            Plugin.Instance.gestureTracker.rightTrigger.OnPressed += RightTryRotating;
 
-            Plugin.Instance.inputTracker.leftGrip.OnReleased += LeftClearMoving;
-            Plugin.Instance.inputTracker.leftTrigger.OnReleased += LeftClearRotating;
-            Plugin.Instance.inputTracker.rightGrip.OnReleased += RightClearMoving;
-            Plugin.Instance.inputTracker.rightTrigger.OnReleased += RightClearRotating;
-            Plugin.log.Debug("End");
+            Plugin.Instance.gestureTracker.leftGrip.OnReleased += LeftClearMoving;
+            Plugin.Instance.gestureTracker.leftTrigger.OnReleased += LeftClearRotating;
+            Plugin.Instance.gestureTracker.rightGrip.OnReleased += RightClearMoving;
+            Plugin.Instance.gestureTracker.rightTrigger.OnReleased += RightClearRotating;
+
+            Logging.Debug("End");
         }
 
         void LeftTryMoving() { TryMoving(true); }
@@ -46,7 +44,7 @@ namespace LightsCameraAction
             moveTarget = target;
             if (rotateTarget != moveTarget)
                 rotateTarget = null;
-            activeHand = left ? Player.Instance.leftControllerTransform : Player.Instance.rightControllerTransform;
+            activeHand = (left ? Player.Instance.LeftHand : Player.Instance.RightHand).controllerTransform;
         }
 
         void TryRotating(bool left)
@@ -56,7 +54,7 @@ namespace LightsCameraAction
             rotateTarget = target;
             if (moveTarget != rotateTarget)
                 moveTarget = null;
-            activeHand = left ? Player.Instance.leftControllerTransform : Player.Instance.rightControllerTransform;
+            activeHand = (left ? Player.Instance.LeftHand : Player.Instance.RightHand).controllerTransform;
         }
 
         void FixedUpdate()
@@ -85,10 +83,10 @@ namespace LightsCameraAction
         {
             Repositionable closestObject = null;
             float closestDistance = Mathf.Infinity;
-            Transform playerHand = left ? Player.Instance.leftControllerTransform : Player.Instance.rightControllerTransform;
+            Transform playerHand = (left ? Player.Instance.LeftHand : Player.Instance.RightHand).controllerTransform;
 
             // Iterate through each object to find the closest one
-            foreach (Repositionable repositionableObject in FindObjectsOfType<Repositionable>())
+            foreach (Repositionable repositionableObject in FindObjectsByType<Repositionable>(FindObjectsSortMode.None))
             {
                 float distanceToPlayerHand = Vector3.Distance(
                     playerHand.position, 

@@ -1,9 +1,9 @@
 ﻿using GorillaLocomotion;
-using GorillaScience.Tools;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using Player = GorillaLocomotion.GTPlayer;
 
 namespace LightsCameraAction.Modules
 {

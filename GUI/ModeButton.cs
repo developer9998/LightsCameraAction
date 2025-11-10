@@ -1,9 +1,5 @@
-﻿using GorillaScience.Behaviors;
-using GorillaScience.Tools;
+﻿using LightsCameraAction.Interactions;
 using LightsCameraAction.Modules;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace LightsCameraAction.GUI
@@ -29,7 +25,7 @@ namespace LightsCameraAction.GUI
 
             Plugin.Instance.menuController.UnhoverAll();
             GorillaTagger.Instance.offlineVRRig.PlayHandTapLocal(67, false, 0.05f);
-            InputTracker.Instance.leftController.SendHapticImpulse(0u, 0.1f, 0.1f);
+            GestureTracker.Instance.leftController.SendHapticImpulse(0u, 0.1f, 0.1f);
             this.transform.localScale = Vector3.one * 1.1f;
             material.color = selectedColor;
             hovered = true;

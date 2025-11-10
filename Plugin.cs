@@ -1,31 +1,23 @@
 ﻿using BepInEx;
-using GorillaScience.Tools;
-using GorillaScience.Extensions;
 using LightsCameraAction.Modules;
 using System;
 using UnityEngine;
-using Utilla;
-using GorillaScience.Behaviors;
-using GorillaLocomotion;
+using Utilla.Attributes;
 using LightsCameraAction.GUI;
+using LightsCameraAction.Tools;
 using System.IO;
 using System.Reflection;
-using GorillaScience;
+using Player = GorillaLocomotion.GTPlayer;
+using LightsCameraAction.Extensions;
+using LightsCameraAction.Interactions;
 
 namespace LightsCameraAction
 {
-    /// <summary>
-    /// This is your mod's main class.
-    /// </summary>
-
-    /* This attribute tells Utilla to look for [ModdedGameJoin] and [ModdedGameLeave] */
-    [ModdedGamemode]
-    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
+    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0"), ModdedGamemode]
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class Plugin : BaseUnityPlugin
     {
         public static Plugin Instance;
-        public static Log log;
 
         public bool GameInitialized { get; private set; }
         public bool Initialized { get; private set; }
@@ -38,7 +30,7 @@ namespace LightsCameraAction
         public Tripod tripod;
         public Cinematic cinematic;
 
-        public InputTracker inputTracker;
+        public GestureTracker gestureTracker;
         public MenuController menuController;
         public InteractionManager interactionManager;
         public RepositionListener repositionListener;
@@ -47,18 +39,18 @@ namespace LightsCameraAction
         void Awake()
         {
             Instance = this;
-            log = Log.Get(PluginInfo.Name);
+            Logging.Init();
         }
 
         void Setup()
         {
-            log.Debug("Setup");
+            Logging.Debug("Setup");
             if (!GameInitialized || menu) return;
             try
             {
-                inputTracker = this.gameObject.AddComponent<InputTracker>();
-                inputTracker.leftStick.OnPressed += ShowMenu;
-                inputTracker.leftStick.OnReleased += HideMenu;
+                gestureTracker = this.gameObject.AddComponent<GestureTracker>();
+                gestureTracker.leftStick.OnPressed += ShowMenu;
+                gestureTracker.leftStick.OnReleased += HideMenu;
                 repositionListener =  this.gameObject.AddComponent<RepositionListener>();
 
                 LCAModule.Baseline();
@@ -67,12 +59,13 @@ namespace LightsCameraAction
                 cinematic = this.gameObject.AddComponent<Cinematic>().Disable();
                 tripod = this.gameObject.AddComponent<Tripod>().Disable();
 
-                modules = new LCAModule[] {
+                modules = 
+                [
                     firstPerson,
                     selfieStick,
                     cinematic,
                     tripod
-                };
+                ];
 
                 menu = Instantiate(
                     bundle.LoadAsset<GameObject>("LCA Menu")
@@ -82,7 +75,7 @@ namespace LightsCameraAction
                 HideMenu();
                 Initialized = true;
             }
-            catch (Exception e) { log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void ShowMenu()
@@ -96,13 +89,13 @@ namespace LightsCameraAction
             try
             {
                 if (!menu || !menu.activeSelf) return;
-                var l = Player.Instance.leftControllerTransform;
+                var l = Player.Instance.LeftHand.controllerTransform;
                 menu.transform.position = l.position;
                 menu.transform.rotation = Quaternion.Euler(
                     l.eulerAngles.x + 180, l.eulerAngles.y, 180
                 );
                 menu.transform.localScale = Vector3.one * Player.Instance.scale;
-            } catch(Exception e) { log.Exception(e); }
+            } catch(Exception e) { Logging.Exception(e); }
         }
 
         void HideMenu()
@@ -120,7 +113,7 @@ namespace LightsCameraAction
                 if (targetModule == null)
                     foreach (var button in menuController.modeButtons)
                         button.Unhover();
-            }catch(Exception e) { log.Exception(e);}
+            }catch(Exception e) { Logging.Exception(e);}
         }
 
         public static T Load<T>(string name) where T : UnityEngine.Object
@@ -148,7 +141,7 @@ namespace LightsCameraAction
             /* This provides support for toggling mods with ComputerInterface, please implement it :) */
             /* Code here runs whenever your mod is disabled (including if it disabled on startup)*/
             firstPerson?.Obliterate();
-            inputTracker?.Obliterate();
+            gestureTracker?.Obliterate();
             repositionListener?.Obliterate();
             menu?.Obliterate();
             HarmonyPatches.RemoveHarmonyPatches();
@@ -161,20 +154,21 @@ namespace LightsCameraAction
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LightsCameraAction.Resources.lcabundle");
             bundle = AssetBundle.LoadFromStream(stream);
             if (!bundle)
-                log.Fatal("Asset Bundle is null");
+                Logging.Fatal("Asset Bundle is null");
             Setup();
         }
 
         public bool inRoom = false;
+
         [ModdedGamemodeJoin]
-        void RoomJoined(string gamemode)
+        void RoomJoined()
         {
             inRoom = true;
             HideMenu();
         }
 
         [ModdedGamemodeLeave]
-        void RoomLeft(string gamemode)
+        void RoomLeft()
         {
             inRoom = false;
             if (cinematic && targetModule == cinematic)

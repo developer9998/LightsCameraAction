@@ -1,10 +1,8 @@
-﻿using GorillaLocomotion;
-using GorillaScience.Extensions;
-using GorillaScience.Tools;
+﻿using LightsCameraAction.Extensions;
+using LightsCameraAction.Tools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using Player = GorillaLocomotion.GTPlayer;
 
 namespace LightsCameraAction.Modules
 {
@@ -15,10 +13,7 @@ namespace LightsCameraAction.Modules
         private GameObject stickPrefab;
         private Camera selfieCamera;
 
-        public const string localRigPath =
-            "Global/Local VRRig/Local Gorilla Player";
-        public const string palmPath =
-            "/rig/body/shoulder.{0}/upper_arm.{0}/forearm.{0}/hand.{0}/palm.01.{0}";
+        public const string palmPath = "GorillaPlayerNetworkedRigAnchor/rig/body/shoulder.{0}/upper_arm.{0}/forearm.{0}/hand.{0}/palm.01.{0}";
 
         void Awake()
         {
@@ -30,7 +25,7 @@ namespace LightsCameraAction.Modules
             }
             catch (Exception e)
             {
-                Plugin.log.Exception(e);
+                Logging.Exception(e);
             }
         }
 
@@ -51,9 +46,9 @@ namespace LightsCameraAction.Modules
                     screenTransform.GetComponent<Renderer>().material.mainTexture as RenderTexture;
                 selfieCamera.aspect = 1;
                 selfieCamera.fieldOfView = shoulderCamera.fieldOfView;
-                stickTransform.SetParent(GameObject.Find(localRigPath + string.Format(palmPath, "R")).transform, false);
+                stickTransform.SetParent(GorillaTagger.Instance.offlineVRRig.transform.Find(string.Format(palmPath, "R")), false);
             }
-            catch (Exception e) { Plugin.log.Exception(e); }
+            catch (Exception e) { Logging.Exception(e); }
         }
 
         void OnDisable()

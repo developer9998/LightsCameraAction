@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>netstandard2.0</TargetFramework>
+	  <TargetFramework>netstandard2.1</TargetFramework>
+	  <LangVersion>preview</LangVersion>
   </PropertyGroup>
-
+	
   <ItemGroup>
     <None Remove="Resources\lcabundle" />
   </ItemGroup>
@@ -30,12 +31,6 @@
     </Reference>
     <Reference Include="BepInEx.Harmony">
       <HintPath>$(BepInExAssemblyPath)\BepInEx.Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Cinemachine">
-      <HintPath>$(GameAssemblyPath)\Cinemachine.dll</HintPath>
-    </Reference>
-    <Reference Include="clipper_library">
-      <HintPath>$(GameAssemblyPath)\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(GameAssemblyPath)\Mono.Security.dll</HintPath>
@@ -70,6 +65,12 @@
     <Reference Include="PlayFab">
       <HintPath>$(GameAssemblyPath)\PlayFab.dll</HintPath>
     </Reference>
+    <Reference Include="SteamVR">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Gorilla Tag\Gorilla Tag_Data\Managed\SteamVR.dll</HintPath>
+    </Reference>
+    <Reference Include="SteamVR_Actions">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Gorilla Tag\Gorilla Tag_Data\Managed\SteamVR_Actions.dll</HintPath>
+    </Reference>
     <Reference Include="System.EnterpriseServices">
       <HintPath>$(GameAssemblyPath)\System.EnterpriseServices.dll</HintPath>
     </Reference>
@@ -84,6 +85,9 @@
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
       <HintPath>$(GameAssemblyPath)\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Cinemachine">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Gorilla Tag\Gorilla Tag_Data\Managed\Unity.Cinemachine.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>$(GameAssemblyPath)\Unity.InputSystem.dll</HintPath>
@@ -287,18 +291,10 @@
       <HintPath>$(GameAssemblyPath)\UnityEngine.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="Utilla">
-      <HintPath>$(OculusPluginsPath)\Utilla\Utilla.dll</HintPath>
+      <HintPath>$(SteamPluginsPath)\Utilla\Utilla.dll</HintPath>
     </Reference>
     <Reference Include="websocket-sharp">
       <HintPath>$(GameAssemblyPath)\websocket-sharp.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Patches\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\GorillaScienceLib\GorillaScienceLib.csproj" />
   </ItemGroup>
 </Project>
